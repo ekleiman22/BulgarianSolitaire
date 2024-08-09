@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Columns Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .description {
+            width: 60%;
+            height: 35vh;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+
+        .column {
+            margin: 0 10px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+
+        .circle {
+            width: 30px;
+            height: 30px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin: 2px 0;
+        }
+
+        button {
+            margin-right: 10px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="description">
+        <p>
+            Take n coins where n is a triangular number (i.e., n = 1 + 2 + . . . +
+            k for some positive integer k), and divide them into s ≥ 1 piles, with no restriction on the number of piles or the numbers of coins in the
+            piles. Then perform repeatedly the following operation. Take one coin
+            from each pile and put all of them in a new pile. Show that no matter
+            what the initial partition of n coins is, the process will always arrive at k
+            piles containing 1, 2, . . . , k coins, respectively, after a finite number of
+            iterations. (After reaching this state, the algorithm will obviously remain
+            in it).
+        </p>
+    </div>
+
+    <div class="controls">
+       k: <input type="number" id="kValue" placeholder="Введите k">        
+       s: <input type="number" id="sValue" placeholder="Введите s">
+        <button onclick="defineS()">Generate s piles</button>
+        <button onclick="doStep()">Do step</button>
+        <button onclick="sortColumns()">Sort</button>
+        <input id="chkSort" type="checkbox" />
+        <label for="chkSort">Sort after each step</label>
+    </div>
+
+    <div class="columns" id="columnsContainer">
+        <!-- Столбики будут сгенерированы здесь -->
+    </div>
+
+    <script>
+let k = 0;
+let s = 0;
+let columns = [];
+
+function defineK() {
+    k = parseInt(document.getElementById('kValue').value);
+}
+
+function defineS() {
+    s = parseInt(document.getElementById('sValue').value);
+    generateColumns();
+}
+
+ function generateColumns() {
+            k = parseInt(document.getElementById('kValue').value);
+    const totalCircles = (k * (k + 1)) / 2;
+    columns = [];
+    let remainingCircles = totalCircles;
+
+    for (let i = 0; i < s - 1; i++) {
+        const maxCircles = remainingCircles - (s - i - 1);
+        const circles = Math.floor(Math.random() * (maxCircles)) + 1;
+        columns.push(circles);
+        remainingCircles -= circles;
+    }
+    columns.push(remainingCircles);
+    sortColumns();
+    displayColumns();
+}
+
+function displayColumns() {
+    const container = document.getElementById('columnsContainer');
+    container.innerHTML = ''; // Clear existing columns
+
+    columns.forEach(height => {
+        const columnDiv = document.createElement('div');
+        columnDiv.className = 'column';
+
+        for (let i = 0; i < height; i++) {
+            const circleDiv = document.createElement('div');
+            circleDiv.className = 'circle';
+            columnDiv.appendChild(circleDiv);
+        }
+        container.appendChild(columnDiv);
+    });
+}
+
+function doStep() {
+    const newColumn = [];
+
+    columns = columns.map(height => {
+        if (height > 0) {
+            newColumn.push(1);
+            return height - 1;
+        } else {
+            return height;
+        }
+    });
+
+    columns.push(newColumn.length);
+    if (chkSort.checked)
+     sortColumns();
+    displayColumns();
+}
+
+function sortColumns() {
+    columns.sort((a, b) => b - a);
+    displayColumns();
+}
+    </script>
+
+</body>
+</html>
